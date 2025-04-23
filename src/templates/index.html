@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>App Information</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    <style>
+        table.dataTable thead th { 
+            border-bottom: 1px solid #111;
+        }
+    </style>
+</head>
+<body>
+    <h1>Google Play Store App Information</h1>
+    
+    <a href="/reviews">View App Reviews</a> | <a href="/export/info">Export App Info CSV</a> | <a href="/export/reviews">Export Reviews CSV</a>
+
+    <table id="appInfoTable" class="display">
+        <thead>
+            <tr>
+                {% for key in app_data[0].keys() %}
+                    <th>{{ key }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in app_data %}
+                <tr>
+                    {% for value in row.values() %}
+                        <td>{{ value }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    <script>
+        $(document).ready( function () {
+            $('#appInfoTable').DataTable({
+                 // Configure DataTables options here, e.g., for scrolling or column definitions
+                "scrollX": true // Add horizontal scrolling for many columns
+            });
+        } );
+    </script>
+</body>
+</html>

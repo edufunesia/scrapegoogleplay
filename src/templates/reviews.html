@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>App Reviews</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    <style>
+        table.dataTable thead th { 
+            border-bottom: 1px solid #111;
+        }
+    </style>
+</head>
+<body>
+    <h1>Google Play Store App Reviews</h1>
+
+    <a href="/">View App Information</a> | <a href="/export/info">Export App Info CSV</a> | <a href="/export/reviews">Export Reviews CSV</a>
+
+    <table id="appReviewsTable" class="display">
+        <thead>
+            <tr>
+                {% for key in reviews_data[0].keys() %}
+                    <th>{{ key }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in reviews_data %}
+                <tr>
+                    {% for value in row.values() %}
+                        <td>{{ value }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    <script>
+        $(document).ready( function () {
+            $('#appReviewsTable').DataTable({
+                "scrollX": true // Add horizontal scrolling for many columns
+            });
+        } );
+    </script>
+</body>
+</html>
