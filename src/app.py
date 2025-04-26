@@ -1,37 +1,54 @@
 import pandas as pd
-from flask import Flask, render_template, send_file
+from flask import Flask, render_template, request, send_file, redirect, url_for
 import os
+from google_play_scraper import reviews
 
 app = Flask(__name__)
 
 INFO_CSV_PATH = 'BankDigital/dataset/info_BANK_MOBILE_GOOGLE_PLAY_Update21092024.csv'
 REVIEWS_CSV_PATH = 'BankDigital/dataset/reviews_BANK_MOBILE_GOOGLE_PLAY_Update21092024.csv'
 
-# Home route - display app information
+# Home route - display the form for app ID
 @app.route("/")
 def index():
-    """Renders the index page with app information from CSV."""
-    app_data = []
-    if os.path.exists(INFO_CSV_PATH):
-        try:
-            df = pd.read_csv(INFO_CSV_PATH)
-            app_data = df.to_dict("records")
-        except Exception as e:
-            print(f"Error reading {INFO_CSV_PATH}: {e}")
-            # Optionally, add an error message to the template context
-            pass # Continue with empty data
+    """Renders the index page with the app ID form."""
+    return render_template("index.html")
 
-    # Ensure app_data is a list, even if empty or on error, to prevent template errors
-    if not app_data:
-         # Provide a minimal structure if no data to prevent template errors with .keys()
-         # This assumes some expected columns; adjust as per your CSV structure if needed
-         # Or handle this case in the template with an if condition
-         # For simplicity here, we'll just pass the empty list and assume template handles it
-         pass # app_data is already []
+# Route to fetch and display reviews based on app ID
+@app.route("/fetch-reviews", methods=["POST"])
+def fetch_reviews():
+    """Fetches and displays reviews for a given app ID."""
+    app_id = request.form.get('app_id')
+    if not app_id:
+        # Redirect back to index or show an error if app_id is missing
+        return redirect(url_for('index'))
 
-    return render_template("index.html", app_data=app_data)
+    fetched_reviews = []
+    try:
+        # Fetch reviews using google-play-scraper
+        # Note: This fetches a limited number of reviews by default.
+        # You might need to implement pagination or specify count for more reviews.
+        fetched_reviews, _ = reviews(
+            app_id,
+            lang='en', # Language
+            country='us', # Country
+            sort='relevancy', # Sort order (newest, helpfulness, relevancy)
+            count=100 # Number of reviews to fetch (max 100 per request)
+        )
+    except Exception as e:
+        print(f"Error fetching reviews for {app_id}: {e}")
+        # Optionally, add an error message to the template context
+        pass # Continue with empty data
 
-# Reviews route - display app reviews
+    # Render the reviews template with the fetched data
+    # We convert the fetched reviews (which are dictionaries) to a list of dictionaries
+    # to match the expected format in reviews.html
+    reviews_data = fetched_reviews
+
+    return render_template("reviews.html", reviews_data=reviews_data)
+
+# Existing Reviews route - display app reviews from the local CSV (can be kept or removed)
+# I'll keep it for now, but you might want to consolidate review display through /fetch-reviews
 @app.route("/reviews")
 def reviews_page():
     """Renders the reviews page with reviews from CSV."""

@@ -1,46 +1,66 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>App Reviews</title>
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        table.dataTable thead th { 
-            border-bottom: 1px solid #111;
+        /* Optional custom styles */
+        body {
+            padding-top: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 20px;
+        }
+        .review-card {
+            margin-bottom: 15px;
+        }
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .review-user {
+            font-weight: bold;
+            color: #0056b3;
+        }
+         .review-date {
+            font-size: 0.9em;
+            color: #6c757d;
         }
     </style>
 </head>
 <body>
-    <h1>Google Play Store App Reviews</h1>
+    <div class="container">
+        <h1 class="mb-4">App Reviews</h1>
 
-    <a href="/">View App Information</a> | <a href="/export/info">Export App Info CSV</a> | <a href="/export/reviews">Export Reviews CSV</a>
-
-    <table id="appReviewsTable" class="display">
-        <thead>
-            <tr>
-                {% for key in reviews_data[0].keys() %}
-                    <th>{{ key }}</th>
-                {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in reviews_data %}
-                <tr>
-                    {% for value in row.values() %}
-                        <td>{{ value }}</td>
-                    {% endfor %}
-                </tr>
+        {% if reviews_data %}
+            {% for review in reviews_data %}
+                <div class="card review-card">
+                    <div class="card-body">
+                        <div class="review-header">
+                            <h5 class="card-title review-user">{{ review.userName }}</h5>
+                            <span class="review-rating text-warning">Rating: {{ review.score }} / 5</span>
+                        </div>
+                        <p class="card-text review-content">{{ review.content }}</p>
+                        <p class="card-text"><small class="review-date">{{ review.at }}</small></p>
+                    </div>
+                </div>
             {% endfor %}
-        </tbody>
-    </table>
+        {% else %}
+            <div class="alert alert-info" role="alert">
+                No reviews found for this app ID.
+            </div>
+        {% endif %}
 
-    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
-    <script>
-        $(document).ready( function () {
-            $('#appReviewsTable').DataTable({
-                "scrollX": true // Add horizontal scrolling for many columns
-            });
-        } );
-    </script>
+        <a href="{{ url_for('index') }}" class="btn btn-secondary mt-3">Back to search</a>
+    </div>
+
+    <!-- Bootstrap JS and dependencies (Popper.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 </body>
 </html>
